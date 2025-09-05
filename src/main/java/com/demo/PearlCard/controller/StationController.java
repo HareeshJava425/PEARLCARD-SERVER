@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.demo.PearlCard.dto.APIResponse;
-import com.demo.PearlCard.service.StationServiceImpl;
+import com.demo.PearlCard.service.StationService;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -18,7 +18,7 @@ import com.demo.PearlCard.service.StationServiceImpl;
 public class StationController {
 
     @Autowired 
-    private StationServiceImpl stationService;
+    private StationService stationService;
 
     @GetMapping("/getAllStations")
     public ResponseEntity<APIResponse <Set<String>>> getAllStations() {

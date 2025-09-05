@@ -9,7 +9,7 @@ import com.demo.PearlCard.dto.JourneyRequest;
 import com.demo.PearlCard.model.Journey;
 
 @Service
-public class FareValidationImpl implements FareValidation {
+public class FareValidationServicImpl implements FareValidationService {
 
     @Autowired
     private UserJourneyRepo userJourneyStorage;

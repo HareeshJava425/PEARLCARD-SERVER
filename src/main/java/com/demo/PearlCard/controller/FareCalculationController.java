@@ -5,14 +5,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.demo.PearlCard.dao.UserJourneyRepoImpl;
+import com.demo.PearlCard.dao.UserJourneyRepo;
 import com.demo.PearlCard.dto.APIResponse;
 import com.demo.PearlCard.dto.DeleteJourneyRequest;
 import com.demo.PearlCard.dto.FareCalculationResponse;
 import com.demo.PearlCard.dto.JourneyRequest;
 import com.demo.PearlCard.model.Journey;
-import com.demo.PearlCard.service.FareCalculationServiceImpl;
-import com.demo.PearlCard.service.FareValidation;
+import com.demo.PearlCard.service.FareCalculationService;
+import com.demo.PearlCard.service.FareValidationService;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -23,17 +23,17 @@ import jakarta.validation.constraints.Min;
 public class FareCalculationController {
 
     @Autowired
-    private FareCalculationServiceImpl fareCalculationService;
+    private FareCalculationService fareCalculationService;
 
     @Autowired
-    private UserJourneyRepoImpl journeyStorageService;
+    private UserJourneyRepo journeyStorageService;
 
-    @Autowired
-    private FareValidation fareValidation;
+    @Autowired 
+    private FareValidationService fareValidation;
 
     /**
      * Get fare for a single trip between zones
-     * GET /api/v1/getFare?fromZone=1&toZone=2
+     * GET /api/v1/getFare?fromStation=1&toZone=2
      */
     @GetMapping("/getFare")
     public ResponseEntity<APIResponse<Integer>> getFare(
@@ -41,7 +41,7 @@ public class FareCalculationController {
             @RequestParam @Min(value = 1, message = "To zone must be positive") int toZone) {
 
         try {
-            Integer fare = fareCalculationService.getTripFare(fromZone, toZone);
+            Integer fare = fareCalculationService.calculateFareByZones(fromZone, toZone);
 
             if (fare != null && fare > 0) {
                 return ResponseEntity.ok(
@@ -76,18 +76,19 @@ public class FareCalculationController {
             // Calculate fares and store journeys
             FareCalculationResponse response = fareCalculationService.calculateTotalJourneyFaresForUser(request);
 
-            return ResponseEntity.ok(
-                APIResponse.success("Fares calculated successfully", response)
-            );
+            // APIResponse 
+
+            APIResponse<FareCalculationResponse> apiResponse = APIResponse.success("success",response);
+
+            return ResponseEntity.ok(apiResponse);
+          
 
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(
-                APIResponse.error("Invalid request: " + e.getMessage())
-            );
+            APIResponse apiResponse = APIResponse.error("Invalid request: "+e.getMessage());
+            return ResponseEntity.badRequest().body(apiResponse);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                APIResponse.error("An error occurred while calculating fares: " + e.getMessage())
-            );
+            APIResponse apiResponse = APIResponse.error("An error occurred while calculating fares: "+e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
         }
     }
 

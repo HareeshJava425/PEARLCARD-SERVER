@@ -3,7 +3,7 @@ package com.demo.PearlCard.service;
 import com.demo.PearlCard.dto.JourneyRequest;
 
 
-public interface FareValidation {
+public interface FareValidationService {
 
     /**
      * Validate journey request
